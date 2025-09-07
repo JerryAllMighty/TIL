@@ -10,10 +10,8 @@
 각 커밋의 해당 앞 부분은 각각 아래의 프로젝트를 나타낸다.   
 
 BR - 배스킨라빈스
+(SI 회사에서 진행한 구축/운영 프로젝트)
 [https://www.notion.so/17507dadd74c8058a60af34821e5fe9a]
 
 DM - 데브매치
-[https://www.notion.so/DevMatch-ead4c6bcb5c14e899723ae499bd01bd0]
-
-## 참고
-https://www.notion.so/17507dadd74c80d69273f01e2cb41b18#17507dadd74c80aeacebd4592812d0f0
+(개인적으로 진행한, 개발자들을 위한 쇼핑몰 플랫폼)

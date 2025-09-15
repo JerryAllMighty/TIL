@@ -1,0 +1,57 @@
+[서두]
+- 이벤트가 있다. 기존의 이 이벤트는 게시 기간을 필수로 가진다. 
+- 하지만 게시 시작 시간은 필수로 가지지 않는다. 
+- 이벤트 시작 시간을 적용하는 로직이 있는데, 해당하는 케이스에 대한 로직이 부족한 부분 있어서 개선을 진행하여야한다.
+
+[본론]
+- 기존에 문제가 되던 코드이다.
+```
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd"); 
+LocalDate startDate = LocalDate.parse(re.getStrtYmd(), formatter); 
+LocalDate endDate = LocalDate.parse(re.getEndYmd(), formatter);
+LocalDate today = LocalDate.now();
+
+<!-- 내가 추가한 부분 -->
+DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern("HHmmss");
+LocalTime startHis = LocalTime.parse(StringUtil.rightPad(re.getStrtHis(), 6, "0"), hourFormatter);
+LocalTime nowHis = LocalTime.now().withSecond(0).withNano(0); // 포함 여부 체크
+<!-- 내가 추가한 부분 -->
+
+boolean included = (today.isEqual(startDate) || today.isAfter(startDate)) 
+&& (nowHis.isEqual(startHis) || nowHis.isAfter(startHis)) <!-- 내가 추가한 부분 -->
+&& (today.isEqual(endDate) || today.isBefore(endDate));
+
+if (!included) { 
+throw new BizServiceException("이벤트 참여 기간이 아닙니다.", ErrorCode.BAD_REQUEST); 
+}
+```
+
+- 우선 변수명 startHis은 이벤트 re에서 시작시간을 가져와 담은 변수인데, 기존에는 비교하는 로직이 없었다.
+- 그래서 내가 포맷팅을 해서 비교하려고 하였고, 기존에 LocalDate 타입으로 필수값인 게시기간을 비교하는 로직은 이미 있었다.
+- 나는 기존의 비교하던 로직에 추가로 비교하여야하는 시작 시간을 가져와서 넣었고, (if문에 조건으로 추가했다)
+- 정상적으로 테스트 안되는 케이스가 나왔다. 
+
+>> 코드에서 생길 수 있는 문제 & 반례
+1. 시작 시간이 없는 경우(옵션인데도 강제 체크됨)
+조건에 && (nowHis.isEqual(startHis) || nowHis.isAfter(startHis))로 분기문에서 체크하는 부분이 있는데,
+startHis가 null이거나 빈 값이면 parse() 단계에서 예외 터짐
+심지어 "시작 시간 조건이 필요 없는 이벤트"도 시작 시간이 00:00:00으로 강제 처리돼야만 정상 동작.
+
+반례:
+이벤트: 20250910 ~ 20250912, 시작시간 없음
+현재: 2025-09-10 00:30
+코드에서는 parse() 단계에서 NPE 혹은 DateTimeParseException 발생.
+
+2. 종료일 당일에 시간 비교가 억지로 적용됨
+이벤트 기간: 2025-09-15 10:00 ~ 2025-09-16 (종료일은 시간 없음)
+현재 시간: 2025-09-16 09:00
+로직 동작:
+today = 9/16 → today.isEqual(endDate) → true ✅
+시간 비교: 09:00 isAfter 10:00 → false ❌
+결과: 종료일 오전 9시에도 참여 불가 판정됨.
+👉 실제로는 종료일은 하루 종일 참여 가능해야 하는데 막힘.
+
+
+[결론]
+- 시작일과 시간을 비교하여야 한다면 LocalDateTime으로 타입을 통일하여서 비교를 하는 것도 좋은 방법
+- 혹은 시간 체크를 할 때 필수값인지 아닌지 체크를 진행하여 로직 분리를 따로 진행하고, 검증도 따로 진행하여야한다

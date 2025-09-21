@@ -14,4 +14,6 @@ BR - 배스킨라빈스
 
 CC - Clean Code (로버트 C. 마틴)
 
+JPA - 자바 ORM 표준 JPA 프로그래밍 (김영한)
+
 DM - 데브매치

@@ -12,6 +12,6 @@
 BR - 배스킨라빈스
 [https://www.notion.so/17507dadd74c8058a60af34821e5fe9a]
 
-CC - Clean Code(로버트 C. 마틴)
+CC - Clean Code (로버트 C. 마틴)
 
 DM - 데브매치

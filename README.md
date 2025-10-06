@@ -16,4 +16,6 @@ CC - Clean Code (로버트 C. 마틴)
 
 JPA - 자바 ORM 표준 JPA 프로그래밍 (김영한)
 
+GJ - 자바의신 교재
+
 DM - 데브매치

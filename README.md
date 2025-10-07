@@ -9,13 +9,14 @@
 ## Prefix
 각 커밋의 해당 앞 부분은 각각 아래의 프로젝트를 나타낸다.   
 
-BR - 배스킨라빈스
-[https://www.notion.so/17507dadd74c8058a60af34821e5fe9a]
 
 CC - Clean Code (로버트 C. 마틴)
 
 JPA - 자바 ORM 표준 JPA 프로그래밍 (김영한)
 
 GJ - 자바의신 교재
+
+BR - 배스킨라빈스
+[https://www.notion.so/17507dadd74c8058a60af34821e5fe9a]
 
 DM - 데브매치

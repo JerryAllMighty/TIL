@@ -1,0 +1,43 @@
+[JPQL 직접 사용 vs @QueryAnnotation 사용]
+A. JPQL 직접 사용
+→ EntityManager를 통해 직접 쿼리를 작성하는 방식.
+EntityManager를 직접 써야 함.
+Service나 Repository 구현 클래스 내부에서 사용.
+가장 자유롭지만, JPA의 추상화 레벨에서 한 단계 내려감 (→ 유연하지만 번거로움).
+
+B. @Query 애너테이션 (JPA Repository 상단에 작성)
+→ JpaRepository를 상속받은 인터페이스에 쿼리 명시.
+예시) public interface MemberRepository extends JpaRepository<Member, Long> {
+  @Query("SELECT m FROM Member m WHERE m.age > :age")
+  List<Member> findMembersOlderThan(@Param("age") int age);
+}
+JPQL(혹은 native SQL)을 메서드 위에 직접 선언.
+복잡한 쿼리를 한눈에 보기 쉽고, Repository 인터페이스에서 관리 가능.
+EntityManager를 직접 쓸 필요가 없음.
+
+
+[API 리턴 타입의 좋은 예시]
+- 보통 사이드 프로젝트 등 로컬에서 얕은 개발을 할 때,  ResponseEntity를 활용하면, 
+깔끔한 형태의 리턴 타입을 유지할 수 있다.
+> 이전의 실무에서는 따로 responseDto를 만들어서 진행하였다
+
+[엔드포인트 네이밍]
+- 메인 화면에서는 할일(Todo) 객체를 목록 조회와 추가하는 기능의 API가 필요하다
+- 메인 컨트롤러는 상단의 공통 API 엔드포인트가 있다. api/main
+- 각 목록 조회와 할 일 추가 API의 엔드포인트와 메서드명이 필요하다
+> 좋은 관례를 가지고 왔다
+URI는 어떤 동작이 수행되는 지 가르키는 게 아니라, 리소스를 가르키는 것이다.리소스에 대한 작업은 HTTP Method를 이용하도록 한다.
+출처: https://prohannah.tistory.com/156 [Hello, Hannah!:티스토리]
+https://restfulapi.net/resource-naming/
+
+[DTO 사용]
+- 기존의 회사에서는 객체 혹은 엔티티에 자식 객체를 그대로 활용하여 데이터를 등록이나 수정하였다
+json 형태안에서는 그래서 요청 json에는 객체 안에 객체가 있는 꼴이 많이 나왔다
+- 하지만 이번에 하는 프로젝트는 기존의 SI 프로젝트처럼  DB 친화적인 부분이 아니라, 객체지향스러운 설계에 조금 더 초점을 맞춘 부분이 컸기에,
+요청때마다 새롭게 객체 안에 객체를 물고 있는 형태 보다는, DTO를 따로 만들어서 활용하기로 했다
+- 결과론적으로는 객체 하나와, 그 객체의 자식 객체를 조회해 올 수 있는 자식 객체의 키 값을 json으로 받고, 이걸 DTO로 활용하고 있다
+
+[초기 데이터 삽입 설정]
+- yml에 초기 데이터 삽입 설정을 넣어줄 수 있었다
+- ddl을 매번 새로  create하는 설정이라, create한 후에, 데이터를 새로 초깃값을 삽입할 수 있게 해주는 부분이 필요했다
+- defer-datasource-initialization: true

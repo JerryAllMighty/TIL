@@ -1,0 +1,34 @@
+[pass by value, pass by reference]
+- 모든 기본 자료형은 Pass By Value이다
+- 참조 자료형은 값이 아닌 참조가 전달되는 Pass by Reference이다
+
+
+[자바의 접근 제어자]
+- public
+> 누구나 접근 가능
+
+- protected
+> 같은 패키지 내에 있거나 상속받은 경우에만 접근 가능
+
+- pakcage-private
+> 같은 패키지 내에 있을 때만 접근 가능
+
+- private
+> 해당 클래스 내에서만 접근 가능
+
+
+[클래스 접근 제어자 선언 시 유의점]
+- public 으로 선언된 클래스는 소스 파일명과 일치하여야한다
+예시) PublicClass.java 라는 소스 파일이 있는데, 
+해당 소스 파일 내에 선언된 클래스가  public PublicClass와 protected PrivateClass로 있다면 컴파일 에어가 안 나지만,
+public PublicClass와 public PrivateClass라면 에러가 난
+
+[자바의 상속]
+
+[상속과 생성자]
+
+[메소드 오버라이딩]
+-
+[참조 자료형의 형 변환]
+
+[polymorphism]

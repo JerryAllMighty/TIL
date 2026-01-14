@@ -1,0 +1,139 @@
+[서두]
+- 오늘은 멀티 모듈 아키텍쳐를 잡기 전에 왜 멀티 모듈을 쓰고, 어떤 아키텍쳐들이 왜 사용되는지 알아보았다. 
+
+[내용]
+# 왜 쓰나?
+## 명확한 경계와 관심사 분리
+도메인별/레이어별(member-domain, order-application 등)로 코드를 나눠서, 서로 참조 방향을 빌드 도구(Gradle/Maven) 수준에서 강제할 수 있다.
+
+예: application 모듈은 domain에만 의존, infra 모듈은 domain에 의존하지만 반대로는 불가 → 순환 의존을 구조적으로 막기 좋다.
+
+## 유지보수성과 리팩터링 용이성
+큰 단일 모듈에서 패키지 규칙만으로 구조를 지키기는 시간이 갈수록 어려워진다.
+모듈 경계가 있으면, “이 모듈 안에서만 바꾸면 된다” 범위가 명확해져서 리팩터링 부담이 준다.
+
+## 팀 단위 병렬 작업
+팀 A는 member-*, 팀 B는 order-* 모듈에서 작업하는 식으로, 같은 repo 안에서도 충돌을 줄이고 역할을 나누기 쉽다.
+
+## 빌드/테스트 성능
+멀티 프로젝트 빌드는 변경된 서브모듈만 다시 컴파일·테스트할 수 있어, 점점 커지는 프로젝트에서 전체 빌드 시간을 줄이는 데 도움이 된다.
+
+## 재사용성
+공통 모듈(common, shared-kafka, auth-core 등)을 별도 모듈로 두고, 여러 애플리케이션이나 서비스가 의존하게 만들 수 있다.
+
+## 이럴 때 쓰면 좋다
+패키지 간 순환 의존이 많아지고, 계층/도메인 규칙이 점점 깨짐
+작은 수정에도 전체 빌드·테스트가 오래 걸림
+특정 기능을 분리/대체/삭제하고 싶은데 어디까지 영향이 가는지 파악하기 어려움
+여러 팀이 한 프로젝트에서 작업하는데, 공통 코드와 도메인 코드가 뒤엉켜 충돌과 사이드이펙트가 잦음
+모듈을 잘라놓으면:
+“여기는 order-domain, 저기는 payment-infra” 식으로 코드 위치와 의존 관계가 설계 수준에서 드러나고,
+빌드 스크립트에서 의존 방향을 제한해 아키텍처 룰을 지키도록 만들 수 있다.
+
+# 다른 대안은 없나?
+## 단일 모듈 모놀리식(패키지로만 구조화)
+```
+code-market/
+  build.gradle
+  src/
+    main/
+      java/
+        com/example/codemarket/
+          member/
+            controller/
+            service/
+            repository/
+            domain/
+          order/
+            controller/
+            service/
+            repository/
+            domain/
+          payment/
+            ...
+      resources/
+    test/
+
+```
+### 장점
+설정이 가장 단순하고, 초기 개발 속도가 빠르다.
+
+### 단점
+규모가 커지면 계층/도메인 규칙을 IDE 패키지 구조와 사람 기억에만 의존하게 되고, 쉽게 “빅 볼 오브 머드”로 간다.
+
+MVP, 작은 팀, 기능 범위가 아직 작을 때 유리하다.
+
+## 모듈러 모놀리식 (멀티 모듈 구조의 철학)
+멀티 모듈 프로젝트는 보통 “모듈러 모놀리식” 아키텍처를 구현하는 한 가지 방식이다.
+하나의 배포 단위(모놀리식)지만, 내부는 도메인/기능 모듈로 강하게 쪼개서 관리한다.
+
+``` 
+code-market/   //레이어 기준 멀티 모듈
+  settings.gradle
+  build.gradle
+
+  core-domain/
+    build.gradle
+    src/main/java/com/example/codemarket/domain/...
+
+  core-application/
+    build.gradle
+    src/main/java/com/example/codemarket/application/...
+
+  core-infra/
+    build.gradle
+    src/main/java/com/example/codemarket/infra/...
+
+  api/
+    build.gradle
+    src/main/java/com/example/codemarket/api/...
+>> 계층 구조를 모듈로 강제, 공통 도메인/규칙이 한 군데에 모인다
+```
+
+```
+code-market/    //도메인(BC) 기준 멀티 모듈
+  settings.gradle
+  build.gradle
+
+  member-domain/
+  member-application/
+  member-infra/
+  member-interface/
+
+  order-domain/
+  order-application/
+  order-infra/
+  order-interface/
+
+  product-domain/
+  product-application/
+  product-infra/
+  product-interface/
+
+  payment-domain/
+  payment-application/
+  payment-infra/
+
+  common/
+    build.gradle
+    src/main/java/com/example/codemarket/common/...
+    
+>> DDD/Bounded Context 경계가 코드 구조에 그대로 반영된다
+```
+
+배포·운영은 단일 서비스처럼 단순하게 유지하면서도, 코드 구조는 “마이크로서비스 수준”으로 모듈화하려는 타협점.
+
+## 마이크로서비스
+애초에 Bounded Context/도메인 별로 물리적으로 다른 서비스로 나누는 방식.
+장점: 완전한 독립 배포, 독립 스케일링, 기술 스택 다양성 등.
+단점: 분산 트랜잭션, 네트워크, 배포/운영 복잡도, 관측성 등 오버헤드가 매우 크다.
+보통 “처음부터” 마이크로서비스로 가기보다는, 모듈러 모놀리식 → 일부 모듈을 서비스로 분리 같은 점진적 접근이 권장된다.
+
+## 결론, 이럴 때는 멀티 모듈 쓰면 좋다
+도메인/기능 경계(예: Member, Order, Payment, Product)가 어느 정도 명확해졌고, 앞으로 기능이 많이 늘어날 게 보일 때
+한 레포 안에서 여러 팀/사람이 동시에 작업할 예정일 때
+“나중에 일부 도메인을 별도 서비스로 뽑아낼 수도 있다”는 그림을 염두에 두고 있을 때
+빌드 시간/테스트 시간이 이미 꽤 체감될 정도로 길어졌을 때
+반대로:
+작은 개인/사이드 프로젝트, 아주 초기 PoC 단계라면 단일 모듈로 먼저 빠르게 만들고,
+도메인 구조가 잡히고 코드가 커질 조짐이 보일 때 멀티 모듈로 리팩터링하는 것도 충분히 현실적인 선택이다.

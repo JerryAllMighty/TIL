@@ -20,4 +20,3 @@ GJ - 자바의신 교재
 BR - 배스킨라빈스
 [https://www.notion.so/17507dadd74c8058a60af34821e5fe9a]
 
-DM - 데브매치

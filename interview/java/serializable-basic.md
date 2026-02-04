@@ -9,6 +9,29 @@ Serializable 기본 키워드 면접 질문
 
 Serializable이 정확히 어떤 역할을 하는 인터페이스인가요?
 
+<details>
+<summary>Serializable은 왜 사용하나요?</summary>
+<div markdown="1">
+바이트 코드로 바꿔야하기 때문에 사용합니다. 바이트 코드로 바뀌면 디스크에 쓰면 저장, 네트워크에 쓰면 전송이 되는데, 
+각 역할에 맞게 역할을 수행하기 전에 필요한 바이트 코드로 바뀌어야하기 때문에 사용합니다.
+</div>
+</details>
+
+<details>
+<summary>Serializable은 왜 외부에 영속하는 용도로는 쓰지말라고 할까요?</summary>
+<div markdown="1">
+버전 호환성에 취약하고, Gadgets 체인처럼 역직렬화 공격에 취약하기 때문입니다. 또한 언어에 종속적이라서 JSON처럼 범용인 것과 차이가 있습니다. 
+</div>
+</details>
+
+<details>
+<summary>멀티플렉싱이란 뭘까요?</summary>
+<div markdown="1">
+여러 개를 하나로 묶는 기술이라고 생각합니다. IO를 예로 들면, 하나의 스레드가 select나 epoll로 여러 소켓의 이벤트를 탐지하는 부분에서 활용하고 있습니다.
+</div>
+</details>
+
+
 Serializable에는 메서드가 없는데, JVM은 어떻게 직렬화 대상을 판단하나요?
 
 자바에서 객체 직렬화는 어떤 흐름으로 동작하나요?

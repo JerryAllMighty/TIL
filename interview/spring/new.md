@@ -1,0 +1,8 @@
+예외 전환
+<details> <summary>스프링에서 예외 전환(Exception Translation)이란 무엇인가요?</summary> <div markdown="1">SQLException 같은 저수준 DB 예외를 DataAccessException 계층으로 변환해 기술 독립성을 보장합니다.</div> </details> <details> <summary>JdbcTemplate에서 예외 전환이 어떻게 동작하나요?</summary> <div markdown="1">update/query 중 SQLException 발생 시 SQLErrorCodeTranslator로 BadSqlGrammarException 등 의미있는 런타임 예외로 자동 매핑합니다.</div> </details>
+트랜잭션 동기화
+<details> <summary>트랜잭션 동기화(Transaction Synchronization)란 무엇인가요?</summary> <div markdown="1">트랜잭션 커밋/롤백 전후에 콜백을 실행하는 TransactionSynchronizationManager 메커니즘입니다.</div> </details> <details> <summary>트랜잭션 동기화의 주요 사용 사례는?</summary> <div markdown="1">캐시 무효화, 세션 플러시, 트랜잭션 완료 후 이벤트 발행을 beforeCommit/afterCompletion에서 처리합니다.</div> </details>
+트랜잭션과 커넥션의 관계
+<details> <summary>스프링 트랜잭션에서 커넥션은 어떻게 관리되나요?</summary> <div markdown="1">DataSourceUtils가 트랜잭션 내에서는 단일 커넥션 공유, 외부에서는 새 커넥션 반환해 일관성 보장합니다.</div> </details> <details> <summary>트랜잭션 밖에서 커넥션을 가져오면 어떻게 되나요?</summary> <div markdown="1">새 커넥션을 받아 수동 close()해야 하며, 트랜잭션 경계 넘어 공유되지 않습니다.</div> </details>
+스프링 빈 스코프
+<details> <summary>스프링 빈 스코프의 기본과 주요 종류는 무엇인가요?</summary> <div markdown="1">기본 singleton 외에 prototype(요청별 새 인스턴스), request/session(HTTP 요청/세션별) 스코프가 있습니다.</div> </details> <details> <summary>singleton 빈에 prototype 빈을 주입할 때 문제는?</summary> <div markdown="1">singleton 생성시점에 prototype이 고정되어 재호출시 새 인스턴스가 아니므로 ObjectFactory나 lookup-method로 해결합니다.</div> </details>

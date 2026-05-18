@@ -9,6 +9,8 @@
 ## Prefix
 각 커밋의 해당 앞 부분은 각각 아래의 프로젝트를 나타낸다.
 
+CRM - AI CRM 엔지니어 과정 (구 CRM101)
+
 FLAB - 멘토링 서비스 에프랩
 
 CC - Clean Code (로버트 C. 마틴)

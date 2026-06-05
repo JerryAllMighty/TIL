@@ -1,0 +1,46 @@
+[개요]
+- that's right. 오늘도 자바 기초를 배우고 있지만 거기에 매몰되지 않고 스스로 깊이를 위해서 한 단계 더 들어가본다.
+- 내부 깊이를 위해서 i am 노력해요.
+
+
+[내용]
+- for 카운터
+- while
+- while
+- 중첩 반복
+- break, continue
+
+
+[질문]
+Q1. Enhanced for문(for-each)의 실체: 자바에서 for (String s : list)를 쓰면 컴파일러는 내부적으로 이를 어떤 코드로 변환할까요? 일반 배열(Array)을 돌 때와 ArrayList 같은 컬렉션을 돌 때 내부 변환 방식이 왜 다를까요?
+> 컴파일러는 해당 배열의 index를 0번부터 끝까지 읽는 코드로 변환합니다. ArrayList도 내부적으로는 배열을 사용하지만 Iterator(반복자) 객체를 사용하는 코드로 변환합니다. 
+```
+List<String> list = Arrays.asList("A", "B", "C");
+Iterator var2 = list.iterator();
+
+while (var2.hasNext()) {
+    String s = (String)var2.next();
+    System.out.println(s);
+}
+```
+>> 다형성과 구조적 효율성을 위해서 이러한 변환을 시도합니다. 자바의 for-each는 ArrayList 뿐만 아니라 LinkedList, HashSet, TreeSet 등 Iterable 인터페이스를 구현한 모든 객체에서 사용 가능한데, 이떄마다 매번
+get(i)로 인덱스로 접근은 어렵다. 연결리스트는 매 처음부터 찾아가면 시간복잡도가 최악이고, HashSet은 인덱스 자체가 없는 자료구조라 get(i) 메서드 자체가 없습니다. 
+따라서 자바는 다음 값이 있으면 가져오게 표준화된 방법인 iterator 구조로 통합해버린 것이다. 
+>> 반면 일반 배열은 자바 컬렉션 프레임워크에 속하지 않는 로우 레벨 구조이다. Iterator를 만들어내는 기능이 없다. 대신 메모리가 연속적으로 붙어있으니 인덱스 접근이 빨라, 컴파일러가 굳이 무거운 객체를 쓰지 않는다.단순 인덱스 카운터 반목문으로 최적화해준다.
+
+Q2. 반복 중 원소 삭제와 ConcurrentModificationException:
+ArrayList를 일반 for문으로 돌면서 remove()할 때와, for-each문으로 돌면서 remove()할 때 각각 어떤 일이 벌어질까요? 안전하게 반복문 내부에서 요소를 지우려면 자바에서는 어떤 객체를 사용해야 할까요?
+
+Q3. while(true)와 스레드:
+자바에서 멀티스레드 환경을 구현할 때, 하나의 스레드가 while(true) 루프를 아무런 조건 없이 돌면 해당 CPU 코어는 어떻게 될까요? 다른 스레드에게 자원을 양보하거나 CPU 과부하를 막기 위해 루프 내부에 어떤 메서드(Thread.sleep() 등)를 조합해야 할까요?
+
+Q4. 캐시 지역성 (Cache Locality):
+자바에서 int[][] arr = new int[10000][10000]; 배열이 있습니다.
+
+1번: 행(Row)을 기준으로 먼저 도는 루프 (arr[i][j])
+
+2번: 열(Column)을 기준으로 먼저 도는 루프 (arr[j][i])
+자바의 JVM 메모리 구조(힙 영역에 배열이 저장되는 방식) 관점에서 볼 때, 왜 1번이 2번보다 압도적으로 빠를까요?
+
+Q5. Label(라벨)문 활용:
+C언어에는 goto가 있지만 자바에는 없습니다. 하지만 자바에는 중첩 루프를 한 번에 탈출하기 위해 break와 continue에 라벨(Label)을 붙일 수 있는 독특한 문법이 있습니다. 이 라벨문은 어떻게 작성하며, 실무에서 사용할 때 어떤 주의점이 있을까요?
